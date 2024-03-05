@@ -1,11 +1,12 @@
-##Task Summary (required)
+## Task Summary (required)
 
-##Changes (required)
+## Changes (required)
 
 - Create:
 - Update:
 
-##Changes made (\*required)
+## Changes made (\*required)
+
 [ ] Bug Fix (fix)
 [ ] New Features (feat)
 [ ] Test (test)
@@ -15,4 +16,4 @@
 [ ] ETC, No production code change (chore)
 [ ] Build task and Dependency management (build)
 
-##Screenshot 📷
+## Screenshot 📷
