@@ -7,24 +7,30 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
-export default function App() {
+export default function Home() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
-      <Image source={require('./assets/망하지망고.png')} />
+      <Image source={require('../assets/망하지망고.png')} />
       <View style={{marginBottom: 25}}>
         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
           정유진님,
           {'\n'}
           오늘도 망고가 건강한가요?
         </Text>
-        <Button title="진단하러 가기" />
+        <Button
+          title="진단하러 가기"
+          onPress={() => navigation.navigate('질병식별')}
+        />
         <Text>버튼을 눌러 망고를 진단해보세요!</Text>
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <Text style={{fontSize: 20, fontWeight: 'bold'}}>최근 진단 기록</Text>
-        <TouchableOpacity>
-          <Image source={require('./assets/arrow_go.png')} />
+        <TouchableOpacity onPress={() => navigation.navigate('검사 기록')}>
+          <Image source={require('../assets/arrow_go.png')} />
         </TouchableOpacity>
       </View>
       <TouchableOpacity
@@ -38,7 +44,7 @@ export default function App() {
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-        <Image source={require('./assets/happy_mango.png')} />
+        <Image source={require('../assets/happy_mango.png')} />
         <View style={{marginLeft: 15}}>
           <Text>2023.09.26</Text>
           <Text style={{fontSize: 16, fontWeight: 'bold'}}>A-13 구역</Text>
@@ -55,7 +61,7 @@ export default function App() {
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-        <Image source={require('./assets/happy_mango.png')} />
+        <Image source={require('../assets/happy_mango.png')} />
         <View style={{marginLeft: 15}}>
           <Text>2023.07.23</Text>
           <Text style={{fontSize: 16, fontWeight: 'bold'}}>B-27 구역</Text>
@@ -72,7 +78,7 @@ export default function App() {
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-        <Image source={require('./assets/sad_mango.png')} />
+        <Image source={require('../assets/sad_mango.png')} />
         <View style={{marginLeft: 15}}>
           <Text>2022.02.25</Text>
           <Text style={{fontSize: 16, fontWeight: 'bold'}}>A-13 구역</Text>
