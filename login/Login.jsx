@@ -14,11 +14,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Login() {
   const navigation = useNavigation();
 
-  const [id, setId] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
 
-  const handleIdChange = (text) => setId(text);
+  const handleUsernameChange = (text) => setUsername(text);
   const handlePasswordChange = (text) => setPassword(text);
 
   const handleLogin = async () => {
@@ -30,7 +30,7 @@ export default function Login() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id, password }),
+          body: JSON.stringify({ username, password }),
         }
       );
 
@@ -46,9 +46,6 @@ export default function Login() {
         } else {
           throw new Error("토큰이 없음");
         }
-
-        // 토큰 저장
-        //await AsyncStorage.setItem("token", data.token);
       } else {
         // 로그인 실패
         setIsLogin(false);
@@ -76,7 +73,7 @@ export default function Login() {
         <TextInput
           style={styles.textInput}
           placeholder="아이디를 입력해주세요"
-          onChangeText={handleIdChange}
+          onChangeText={handleUsernameChange}
         />
         <TextInput
           style={styles.textInput}
@@ -85,15 +82,16 @@ export default function Login() {
         />
       </View>
 
-      <View style={{ flexDirection: "row-reverse", fontSize: 10 }}>
+      <View style={{ flexDirection: "row-reverse" }}>
         <Text>비밀번호 찾기</Text>
         <View style={{ width: 10 }} />
         <Text>아이디 찾기</Text>
       </View>
 
+      <View style={{ height: 30 }} />
       {/*로그인 실패 시 (isLogin이 false이면) 문구가 뜨도록 */}
       {!isLogin && (
-        <Text style={{ color: "red" }}>
+        <Text style={{ color: "red", fontSize: 13, textAlign: "center" }}>
           로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.
         </Text>
       )}
@@ -117,7 +115,8 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    marginTop: 30,
+    //marginTop: 30,
+    marginTop: 15,
     padding: 10,
     borderWidth: 1,
     backgroundColor: "yellow",
