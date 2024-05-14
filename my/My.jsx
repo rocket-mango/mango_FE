@@ -28,7 +28,7 @@ export default function My() {
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const backendurl = 'http://52.79.190.251:8080/api/user/information';
+        const backendurl = 'http://10.240.151.5:8080/api/user/information';
         const response = await axios.get(backendurl, {
           headers: {
             Authorization: token

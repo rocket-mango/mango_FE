@@ -31,7 +31,7 @@ export default function Result() {
   useEffect(() => {
     async function fetchDiagnosis() {
       try {
-        const response = await fetch("/api/disease/diagnosis", {
+        const response = await fetch("10.240.151.5:8080/api/disease/diagnosis", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
