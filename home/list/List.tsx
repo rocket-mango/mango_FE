@@ -18,7 +18,7 @@ const List: React.FC = () => {
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const response = await axios.get('http://10.240.151.5:8080/api/disease/my-mango-list', {
+        const response = await axios.get('http://3.37.123.38:8080/api/disease/my-mango-list', {
           headers: {
             Authorization: token
           }
