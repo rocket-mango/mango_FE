@@ -48,58 +48,108 @@ export default function Test() {
   };
   
   const [selectImage, setSelectImage] = useState("");
+  const [location, setLocation] = useState("");
+  const [token, setToken] = useState("");
 
-  const ImagePicker = (source) => {
-    requestPermissions().then(() => {
-      let options = {
-        mediaType: "photo",
-        quality: 1,
-        storageOptions: {
-          path: "image",
-        },
-      };
-
-      if (source === "camera") {
-        launchCamera(options, handleResponse);
-      } else if (source === "gallery") {
-        launchImageLibrary(options, handleResponse);
+  // 토큰 설정 로직 확인
+useEffect(() => {
+  const getToken = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("token");
+      if (userToken !== null) {
+        console.log("Token:", userToken); // 로그를 통해 토큰 출력 확인
+        setToken(userToken);
+      } else {
+        console.log("No token found"); // 토큰이 없는 경우 로그 출력
       }
-    });
+    } catch (error) {
+      console.log("Token retrieval failed:", error);
+    }
+  };
+
+  getToken();
+}, []);
+
+
+  const ImagePicker = async (source) => {
+    const hasPermissions = await requestPermissions();
+    if (!hasPermissions) return;  // 권한이 없으면 함수 종료
+  
+    let options = {
+      mediaType: "photo",
+      quality: 1,
+      storageOptions: {
+        path: "images",
+        skipBackup: true,
+      },
+    };
+  
+    const handleResponse = (fetchResponse) => {
+      if (fetchResponse.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (fetchResponse.errorCode) {
+        console.log("ImagePicker Error:", fetchResponse.errorMessage);
+      } else {
+        setSelectImage(fetchResponse.assets[0].uri);
+        console.log(fetchResponse.assets[0].uri);
+      }
+    };
+
+    const handleUpload = () => {
+      if (selectImage) {
+        uploadImage(selectImage);
+      } else {
+        Alert.alert("Upload Error", "No image selected. Please select an image first.");
+      }
+    };
+    
+    
+  
+    if (source === "camera") {
+      launchCamera(options, handleResponse);
+    } else if (source === "gallery") {
+      launchImageLibrary(options, handleResponse);
+    }
   };
   
 
   const uploadImage = async (imageUri) => {
     try {
-      const formData = new FormData();
-      formData.append("image", {
-        uri: imageUri,
-        name: "image.jpg",
-        type: "image/jpeg",
-      });
+      const response=await fetch(imageUri);
+      const blob=await response.blob();
 
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/disease/diagnosis`,
+      const formData = new FormData();
+      formData.append('mangoImage', blob, 'image.png');
+      formData.append("location", location);
+  
+      const fetchResponse = await fetch(
+        "http://3.37.123.38:8080/api/disease/diagnosis",
         {
           method: "POST",
           body: formData,
           headers: {
-            "Content-Type": "multipart/form-data",
-          },
+            //"Content-Type": "multipart/form-data", //자동으로 설정됨
+            "Authorization": `Bearer ${token}`
+        }
         }
       );
-
-      const data = await response.json();
+  
+      if (!fetchResponse.ok) {
+        throw new Error(`Failed to upload image, status ${response.status}`);
+      }
+  
+      const data = await fetchResponse.json();
       console.log("Image upload response:", data);
+      Alert.alert("Upload Success", "Image has been successfully uploaded.");
     } catch (err) {
-      console.warn(err);
+      console.warn("Upload Error:", err);
+      Alert.alert("Upload Error", `Failed to upload image. Please try again. Error: ${err}`);
     }
   };
 
-  const handleResponse = (response) => {
-    if (response.didCancel) {
-      console.log("User cancelled image picker");
-    } else if (response.errorCode) {
-      console.log("ImagePicker Error:", response.errorMessage);
+  const handleUpload = () => {
+    if (selectImage) {
+      uploadImage(selectImage);
     } else {
       Alert.alert("Upload Error", "No image selected. Please select an image first.");
     }
