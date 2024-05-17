@@ -84,14 +84,14 @@ useEffect(() => {
       },
     };
   
-    const handleResponse = (response) => {
-      if (response.didCancel) {
+    const handleResponse = (fetchResponse) => {
+      if (fetchResponse.didCancel) {
         console.log("User cancelled image picker");
-      } else if (response.errorCode) {
-        console.log("ImagePicker Error:", response.errorMessage);
+      } else if (fetchResponse.errorCode) {
+        console.log("ImagePicker Error:", fetchResponse.errorMessage);
       } else {
-        setSelectImage(response.assets[0].uri);
-        console.log(response.assets[0].uri);
+        setSelectImage(fetchResponse.assets[0].uri);
+        console.log(fetchResponse.assets[0].uri);
       }
     };
 
@@ -115,38 +115,92 @@ useEffect(() => {
 
   const uploadImage = async (imageUri) => {
     try {
-      const formData = new FormData();
-      formData.append("mangoImage", {
-        uri: imageUri,
-        name: "image.png",
-        type: "image/png",
-      });
-      formData.append("location", location);
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
   
-      const response = await fetch(
-        "http://3.37.123.38:8080/api/disease/diagnosis",
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result.split(',')[1]; // Base64 데이터 추출
+        const image = {
+          name: "image.png",
+          type: "image/png",
+          base64: base64 // Base64 데이터 추가
+        };
+  
+        const formData = new FormData();
+        formData.append('mangoImage', image);
+        formData.append('location', location);
+
+        console.log(formData);
+  
+        try {
+          const serverResponse = await fetch("http://3.37.123.38:8080/api/disease/diagnosis", {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              "Authorization": `Bearer ${token}`
+            },
+          });
+  
+          const result = await serverResponse.json();
+          console.log('Success:', result);
+        } catch (error) {
+          console.error('Error sending image to server:', error);
         }
-      );
-  
-      if (!response.ok) {
-        throw new Error(`Failed to upload image, status ${response.status}`);
-      }
-  
-      const data = await response.json();
-      console.log("Image upload response:", data);
-      Alert.alert("Upload Success", "Image has been successfully uploaded.");
-    } catch (err) {
-      console.warn("Upload Error:", err);
-      Alert.alert("Upload Error", `Failed to upload image. Please try again. Error: ${err}`);
+      };
+      reader.readAsDataURL(blob); // Blob을 Base64로 변환
+    } catch (error) {
+      console.error('Error fetching image:', error);
     }
   };
+  // const uploadImage = async (imageUri) => {
+
+
+
+  //   try {
+  //     const response = await fetch(imageUri);
+  //     const blob = await response.blob();
+
+  //     const reader = new FileReader();
+  //     reader.onloadend = async () => {
+  //     const base64 = reader.result.split(',')[1]; // Base64 데이터 추출
+  //     const image = {
+  //       name: "image.png",
+  //       type: "image/png",
+  //       base64: base64 // Base64 데이터 추가
+  //     };
+
+  //     const formData = new FormData();
+  //     formData.append('mangoImage', image);
+  //     formData.append("location", location);
+
+  //     console.log(image);
+  
+  //     const fetchResponse = await fetch(
+  //       "http://3.37.123.38:8080/api/disease/diagnosis",
+  //       {
+  //         method: "POST",
+  //         body: formData,
+  //         headers: {
+  //           "Content-Type": "multipart/form-data", //자동으로 설정됨
+  //           "Authorization": `Bearer ${token}`
+  //       }
+  //       }
+  //     );
+  
+  //     if (!fetchResponse.ok) {
+  //       throw new Error(`Failed to upload image, status ${response.status}`);
+  //     }
+  
+  //     const data = await fetchResponse.json();
+  //     console.log("Image upload response:", data);
+  //     Alert.alert("Upload Success", "Image has been successfully uploaded.");
+  //   } catch (err) {
+  //     console.warn("Upload Error:", err);
+  //     Alert.alert("Upload Error", `Failed to upload image. Please try again. Error: ${err}`);
+  //   }
+  // };
 
   const handleUpload = () => {
     if (selectImage) {
