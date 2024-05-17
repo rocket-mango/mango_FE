@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
+  ScrollView,
   View,
   Image,
   Text,
@@ -8,9 +9,16 @@ import {
   Platform,
   PermissionsAndroid,
   TextInput,
+  Alert,
+  Linking,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useEffect } from 'react';
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+//import { AsyncStorage } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+//import { Alert } from 'react-native';
+
 
 export default function Test() {
   const navigation = useNavigation();
@@ -21,91 +29,134 @@ export default function Test() {
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         PermissionsAndroid.PERMISSIONS.CAMERA,
       ];
+  
+      const granted = await PermissionsAndroid.requestMultiple(permissions);
 
-      const granted = await PermissionsAndroid.requestMultiple(permissions, {
-        title: "Permission Request",
-        message:
-          "This app needs access to your storage and camera to upload images.",
-        buttonNegative: "Cancel",
-        buttonPositive: "OK",
-      });
-
-      if (
-        granted["android.permission.READ_EXTERNAL_STORAGE"] ===
-          PermissionsAndroid.RESULTS.GRANTED &&
-        granted["android.permission.CAMERA"] ===
-          PermissionsAndroid.RESULTS.GRANTED
-      ) {
-        console.log("Storage and Camera permissions granted");
+      if (granted["android.permission.READ_EXTERNAL_STORAGE"] === PermissionsAndroid.RESULTS.GRANTED &&
+          granted["android.permission.CAMERA"] === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("Storage and Camera permissions granted");
+          return true;
       } else {
-        console.log("Permissions denied");
+          console.log("Permissions denied - using default settings for testing");
+          return true;  // 테스트를 위해 일시적으로 권한 거부를 무시
       }
+      
     } catch (err) {
       console.warn(err);
+      return false;  // 예외 발생 시 false 반환
+    }
+  };
+  
+  const [selectImage, setSelectImage] = useState("");
+  const [location, setLocation] = useState("");
+  const [token, setToken] = useState("");
+
+  // 토큰 설정 로직 확인
+useEffect(() => {
+  const getToken = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("token");
+      if (userToken !== null) {
+        console.log("Token:", userToken); // 로그를 통해 토큰 출력 확인
+        setToken(userToken);
+      } else {
+        console.log("No token found"); // 토큰이 없는 경우 로그 출력
+      }
+    } catch (error) {
+      console.log("Token retrieval failed:", error);
     }
   };
 
-  const [selectImage, setSelectImage] = useState("");
+  getToken();
+}, []);
 
-  const ImagePicker = (source) => {
-    requestPermissions().then(() => {
-      let options = {
-        mediaType: "photo",
-        quality: 1,
-        storageOptions: {
-          path: "image",
-        },
-      };
 
-      if (source === "camera") {
-        launchCamera(options, handleResponse);
-      } else if (source === "gallery") {
-        launchImageLibrary(options, handleResponse);
+  const ImagePicker = async (source) => {
+    const hasPermissions = await requestPermissions();
+    if (!hasPermissions) return;  // 권한이 없으면 함수 종료
+  
+    let options = {
+      mediaType: "photo",
+      quality: 1,
+      storageOptions: {
+        path: "images",
+        skipBackup: true,
+      },
+    };
+  
+    const handleResponse = (response) => {
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.errorCode) {
+        console.log("ImagePicker Error:", response.errorMessage);
+      } else {
+        setSelectImage(response.assets[0].uri);
+        console.log(response.assets[0].uri);
       }
-    });
+    };
+
+    const handleUpload = () => {
+      if (selectImage) {
+        uploadImage(selectImage);
+      } else {
+        Alert.alert("Upload Error", "No image selected. Please select an image first.");
+      }
+    };
+    
+    
+  
+    if (source === "camera") {
+      launchCamera(options, handleResponse);
+    } else if (source === "gallery") {
+      launchImageLibrary(options, handleResponse);
+    }
   };
+  
 
   const uploadImage = async (imageUri) => {
     try {
       const formData = new FormData();
-      formData.append("image", {
+      formData.append("mangoImage", {
         uri: imageUri,
         name: "image.jpg",
         type: "image/jpeg",
       });
-
+      formData.append("location", location);
+  
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/disease/diagnosis`,
+        "http://3.37.123.38:8080/api/disease/diagnosis",
         {
           method: "POST",
           body: formData,
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
+  
+      if (!response.ok) {
+        throw new Error(`Failed to upload image, status ${response.status}`);
+      }
+  
       const data = await response.json();
       console.log("Image upload response:", data);
+      Alert.alert("Upload Success", "Image has been successfully uploaded.");
     } catch (err) {
-      console.warn(err);
+      console.warn("Upload Error:", err);
+      Alert.alert("Upload Error", `Failed to upload image. Please try again. Error: ${err}`);
     }
   };
-
-  const handleResponse = (response) => {
-    if (response.didCancel) {
-      console.log("User cancelled image picker");
-    } else if (response.errorCode) {
-      console.log("ImagePicker Error:", response.errorMessage);
+  
+  const handleUpload = () => {
+    if (selectImage) {
+      uploadImage(selectImage);
     } else {
-      setSelectImage(response.assets[0].uri);
-      console.log(response.assets[0].uri);
-      uploadImage(response.assets[0].uri);
+      Alert.alert("Upload Error", "No image selected. Please select an image first.");
     }
   };
-
   return (
-    <View style={[styles.screenContainer, styles.justifyCenterContainer]}>
+    <ScrollView style={styles.screenContainer}>
       <View style={styles.screen}>
         <View>
           {selectImage ? (
@@ -121,7 +172,9 @@ export default function Test() {
                 },
               ]}
             >
-              <Text style={{ color: "#606060" }}>사진을 업로드해주세요.</Text>
+              <Text style={{ color: "#606060" }}>
+                망고 잎 사진을 업로드해주세요.
+              </Text>
             </View>
           )}
         </View>
@@ -172,30 +225,32 @@ export default function Test() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("진단 결과")}
+          //onPress={() => navigation.navigate("진단 결과")}
+          onPress={handleUpload}  // '진단하기' 버튼을 누를 때 업로드 실행
         >
           <Text style={styles.buttonText}>진단하기</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    backgroundColor: "white",
-  },
+  screenContainer: { flex: 1, backgroundColor: "white" }, //ScrollView
   screen: {
-    marginHorizontal: 40,
+    marginHorizontal: 24,
+    marginTop: 40,
+  },
+  screenBottom: {
+    marginBottom: 36,
   },
 
-  space: { marginBottom: 45 },
+  space: { marginBottom: 36 },
 
   alginCenterContainer: { alignItems: "center" },
   justifyCenterContainer: { justifyContent: "center" },
 
-  uploadImg: { aspectRatio: 1, width: "100%", marginBottom: 25 },
+  uploadImg: { aspectRatio: 1, width: "100%", marginBottom: 16 },
 
   title: { fontSize: 20, fontWeight: "bold" },
   button: {
@@ -225,22 +280,24 @@ const styles = StyleSheet.create({
 
   imgButton: { width: 25, height: 25 },
 
-  listBox: {
-    width: "100%",
-    height: 80,
-    borderWidth: 1,
-    borderColor: "#E6E6E6",
-    borderRadius: 6,
-    backgroundColor: "#F8F8F8",
-    padding: 10,
-    marginBottom: 10,
+  //구역 입력
+  container: {
+    height: 48,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    backgroundColor: "#F9F9F9",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#787878",
   },
-  weatherText: {
+  input: {
+    padding: 8,
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#676767",
-    marginBottom: 8,
+  },
+  searchButton: {
+    width: 24,
+    height: 24,
   },
 });

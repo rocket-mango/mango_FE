@@ -13,13 +13,14 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-export default function Result() {
+
+export default function Result({route}) {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [testResult, setTestResult]=useState({
     diseaseResult: {
       is_disease: false,
-      img_url: "",
+      img_url: "",  //여기서 초기화
     },
     uploadInfo: {
       location: "",
@@ -30,16 +31,19 @@ export default function Result() {
 
   useEffect(() => {
     async function fetchDiagnosis() {
+      //강제로 초기 로딩 상태 설정
+      setIsLoading(true);
       try {
-        const response = await fetch("10.240.151.5:8080/api/disease/diagnosis", {
+        console.log("Params: ", route.params);
+        const response = await fetch("3.37.123.38:8080/api/disease/diagnosis", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             mango: {
-              img_url: mangoImageUrl,
-              location: location,
+              img_url: route.params?.img_url,
+              location: route.params?.location,
             },
           }),
         });
@@ -49,6 +53,7 @@ export default function Result() {
         }
 
         const data = await response.json();
+        console.log("API Response: ", data);
         setTestResult(data);
       } catch (error) {
         Alert.alert("오류", error.message);
@@ -57,8 +62,14 @@ export default function Result() {
       }
     }
 
-    fetchDiagnosis();
-  }, []);
+    if (route.params?.img_url && route.params?.location){
+      fetchDiagnosis(route.params.img_url, route.params.location);
+    } else{
+      Alert.alert("Error", "No image URL or location provided.");
+      setIsLoading(false);
+    }
+
+  }, [route.params]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

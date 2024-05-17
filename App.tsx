@@ -73,13 +73,31 @@ export default function App() {
         screenOptions={{ headerShown: false }}
         initialRouteName="로그인"
       >
-        {<LoginStack.Screen
+        {/*<LoginStack.Screen
           name="로그인"
           component={Login}
           options={{ headerShown: false }}
-  /> }
+  /> */}
         <LoginStack.Screen name="앱 화면" component={AppScreen} />
       </LoginStack.Navigator>
     </NavigationContainer>
   );
 }
+
+// export default function App() {
+//   return (
+//     <NavigationContainer>
+//       <LoginStack.Navigator
+//         screenOptions={{ headerShown: false }}
+//         initialRouteName="로그인"
+//       >
+//         {<LoginStack.Screen
+//           name="로그인"
+//           component={Login}
+//           options={{ headerShown: false }}
+//   /> }
+//         <LoginStack.Screen name="앱 화면" component={AppScreen} />
+//       </LoginStack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
