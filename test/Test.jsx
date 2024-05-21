@@ -95,13 +95,13 @@ useEffect(() => {
       }
     };
 
-    const handleUpload = () => {
-      if (selectImage) {
-        uploadImage(selectImage);
-      } else {
-        Alert.alert("Upload Error", "No image selected. Please select an image first.");
-      }
-    };
+    // const handleUpload = () => {
+    //   if (selectImage) {
+    //     uploadImage(selectImage);
+    //   } else {
+    //     Alert.alert("Upload Error", "No image selected. Please select an image first.");
+    //   }
+    // };
     
     
   
@@ -119,11 +119,15 @@ useEffect(() => {
       const blob=await response.blob();
 
       const formData = new FormData();
-      formData.append('mangoImage', blob, 'image.png');
+      formData.append("mangoImage", {
+        uri: png,
+        name: "image.png",
+        type: "multipart/form-data",
+      });
       formData.append("location", location);
   
       const fetchResponse = await fetch(
-        "http://3.37.123.38:8080/api/disease/diagnosis",
+        "http://13.125.0.58:8080/api/disease/diagnosis",
         {
           method: "POST",
           body: formData,

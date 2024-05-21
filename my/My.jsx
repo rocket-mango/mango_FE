@@ -28,7 +28,7 @@ export default function My() {
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const backendurl = 'http://3.37.123.38:8080/api/user/information';
+        const backendurl = 'http://13.125.0.58:8080/api/user/information';
         const response = await axios.get(backendurl, {
           headers: {
             Authorization: token
@@ -66,7 +66,10 @@ export default function My() {
                 <Text style={{ fontSize: 18, marginBottom: 20 }}>비밀번호: {userInfo.password}</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('Change')}
+            >
               <Text style={styles.buttonText}>내 정보 수정하기</Text>
             </TouchableOpacity>
           </View>
