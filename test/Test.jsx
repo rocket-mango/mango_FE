@@ -115,19 +115,19 @@ useEffect(() => {
 
   const uploadImage = async (imageUri) => {
     try {
-      const response=await fetch(imageUri);
-      const blob=await response.blob();
+      // const response=await fetch(imageUri);
+      // const blob=await response.blob();
 
       const formData = new FormData();
       formData.append("mangoImage", {
-        uri: png,
+        uri: imageUri,
         name: "image.png",
-        type: "multipart/form-data",
+        type: "image/png",
       });
       formData.append("location", location);
   
       const fetchResponse = await fetch(
-        "http://13.125.0.58:8080/api/disease/diagnosis",
+        "http://43.200.174.193:8080/api/disease/diagnosis",
         {
           method: "POST",
           body: formData,
@@ -139,7 +139,7 @@ useEffect(() => {
       );
   
       if (!fetchResponse.ok) {
-        throw new Error(`Failed to upload image, status ${response.status}`);
+        throw new Error(`Failed to upload image, status ${fetchResponse.status}`);
       }
   
       const data = await fetchResponse.json();

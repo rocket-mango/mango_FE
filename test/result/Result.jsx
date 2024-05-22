@@ -35,7 +35,7 @@ export default function Result({route}) {
       setIsLoading(true);
       try {
         console.log("Params: ", route.params);
-        const response = await fetch("13.125.0.58:8080/api/disease/diagnosis", {
+        const response = await fetch("43.200.174.193:8080/api/disease/diagnosis", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

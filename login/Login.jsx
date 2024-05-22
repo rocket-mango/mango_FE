@@ -24,7 +24,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        "http://13.125.0.58:8080/api/user/login",
+        "http://43.200.174.193:8080/api/user/login",
         {
           method: "POST",
           headers: {
