@@ -228,8 +228,8 @@ useEffect(() => {
 
         <TouchableOpacity
           style={styles.button}
-          //onPress={() => navigation.navigate("진단 결과")}
-          onPress={handleUpload}  // '진단하기' 버튼을 누를 때 업로드 실행
+          onPress={() => navigation.navigate("진단 결과")}
+          //onPress={handleUpload}  // '진단하기' 버튼을 누를 때 업로드 실행
         >
           <Text style={styles.buttonText}>진단하기</Text>
         </TouchableOpacity>
