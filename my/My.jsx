@@ -68,7 +68,11 @@ export default function My() {
             </View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('Change')}
+              onPress={() => {
+                console.log(navigation);
+                console.log('Navigating to Change');
+                navigation.navigate('Change');
+              }}
             >
               <Text style={styles.buttonText}>내 정보 수정하기</Text>
             </TouchableOpacity>

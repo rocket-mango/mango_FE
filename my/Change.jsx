@@ -35,8 +35,8 @@ const UserInfoScreen = () => {
         }
       });
 
-      console.log("서버 응답: ", response.data);
       Alert.alert("수정 성공", "정보가 성공적으로 수정되었습니다.");
+      NavigationContainer.goBack();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         // Axios 에러인 경우, error.response 등을 안전하게 접근할 수 있습니다.
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
-    backgroundColor: '#228B22',
+    backgroundColor: '#AFD803',
     padding: 11,
     alignItems: 'center',
     marginHorizontal: 40,

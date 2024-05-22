@@ -64,7 +64,7 @@ function AppScreen() {
         component={TestStackScreen}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="마이 페이지" component={My} />
+      <Tab.Screen name="마이 페이지" component={MyStackScreen} />
     </Tab.Navigator>
   );
 }
@@ -114,6 +114,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-// 
-
