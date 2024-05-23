@@ -21,7 +21,6 @@ const App = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>회원 탈퇴</Text>
       <Text style={styles.boldLargeText}>탈퇴가 완료되었습니다.</Text>
       <Image
         source={require("../assets/check.png")}
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   greenButton: {
-    backgroundColor: '#228B22',
+    backgroundColor: '#AFD803',
     padding: 10,
     width: 300,  // 너비 증가
     alignItems: 'center',

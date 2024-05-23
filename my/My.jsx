@@ -9,7 +9,6 @@ import {
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function My() {
@@ -17,10 +16,10 @@ export default function My() {
 
   const infoTitle = ["이메일", "닉네임", "이름", "아이디", "비밀번호"];
   const [userInfo, setUserInfo] = useState({
-    email: "",
-    nickname: "",
-    name: "",
-    username: "",
+    email: "yujin@google.com",
+    nickname: "yujin",
+    name: "yujin",
+    username: "yujin00",
     password: "보안을 위해 가렸습니다."
   });
 
@@ -28,13 +27,20 @@ export default function My() {
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const backendurl = 'http://43.200.174.193:8080/api/user/information';
-        const response = await axios.get(backendurl, {
-          headers: {
-            Authorization: token
-          }
-        });
-        setUserInfo(response.data);
+        // 서버에서 사용자 정보를 가져오는 부분은 주석 처리
+        // const backendurl = 'http://3.36.74.4:8080/api/user/information';
+        // const response = await axios.get(backendurl, {
+        //   headers: {
+        //     Authorization: token
+        //   }
+        // });
+        // setUserInfo(response.data);
+        
+        // 로컬 스토리지에서 가져오기
+        const storedUserInfo = await AsyncStorage.getItem("userInfo");
+        if (storedUserInfo) {
+          setUserInfo(JSON.parse(storedUserInfo));
+        }
       } catch (error) {
         console.error("사용자 정보를 가져오는 데 오류가 발생했습니다:", error);
       }
@@ -42,6 +48,18 @@ export default function My() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      // 네비게이션에서 다시 포커스될 때마다 사용자 정보 갱신
+      const storedUserInfo = await AsyncStorage.getItem("userInfo");
+      if (storedUserInfo) {
+        setUserInfo(JSON.parse(storedUserInfo));
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.screenContainer}>
@@ -68,11 +86,7 @@ export default function My() {
             </View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                console.log(navigation);
-                console.log('Navigating to Change');
-                navigation.navigate('Change');
-              }}
+              onPress={() => navigation.navigate('Change', { userInfo })}
             >
               <Text style={styles.buttonText}>내 정보 수정하기</Text>
             </TouchableOpacity>
@@ -91,14 +105,14 @@ export default function My() {
             source={require("../assets/arrow_go.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.listBox}>
+        <TouchableOpacity style={styles.listBox} onPress={() => navigation.navigate('Logout')}>
           <Text style={styles.buttonText}>로그아웃 하기</Text>
           <Image
             style={styles.arrowButton}
             source={require("../assets/arrow_go.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.listBox}>
+        <TouchableOpacity style={styles.listBox} onPress={() => navigation.navigate('Leave')}>
           <Text style={styles.buttonText}>회원 탈퇴하기</Text>
           <Image
             style={styles.arrowButton}
@@ -118,17 +132,13 @@ const styles = StyleSheet.create({
   screen: {
     marginHorizontal: 40,
   },
-
   space: { marginBottom: 45 },
-
   alginCenterContainer: { alignItems: "center" },
   justifyCenterContainer: { justifyContent: "center" },
-
-  //여기부터
   myInfo: {
     width: "100%",
     marginBottom: 30,
-    padding: 20, //내정보 box 안
+    padding: 20,
     borderColor: "#E6E6E6",
     borderRadius: 6,
     backgroundColor: "#F8F8F8",
@@ -140,7 +150,7 @@ const styles = StyleSheet.create({
         shadowRadius: 3,
       },
       android: {
-        elevation: 3, // TODO: 안드로이드 버튼 그림자 수정
+        elevation: 3,
       },
     }),
   },

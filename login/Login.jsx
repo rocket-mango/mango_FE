@@ -24,7 +24,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        "http://43.200.174.193:8080/api/user/login",
+        "http://3.36.74.4:8080/api/user/login",
         {
           method: "POST",
           headers: {
@@ -42,7 +42,7 @@ export default function Login() {
         if (token) {
           // 토큰 저장
           await AsyncStorage.setItem("token", token);
-          navigation.navigate("앱 화면");
+          navigation.navigate("AppScreen", { screen: 'HomeTab' });
         } else {
           throw new Error("토큰이 없음");
         }

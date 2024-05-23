@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const UserInfoScreen = () => {
-  const [name, setName] = useState('yujin');
-  const [nickname, setNickname] = useState('yujin');
-  const [username, setUsername] = useState('yujin');
-  const [email, setEmail] = useState('johndoe@example.com');
-  const [password, setPassword] = useState('************');
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { userInfo } = route.params;
+
+  const [name, setName] = useState(userInfo.name);
+  const [nickname, setNickname] = useState(userInfo.nickname);
+  const [username, setUsername] = useState(userInfo.username);
+  const [email, setEmail] = useState(userInfo.email);
+  const [password, setPassword] = useState(userInfo.password);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUpdate = async () => {
@@ -17,10 +21,9 @@ const UserInfoScreen = () => {
       return;
     }
     setIsLoading(true);
-    try{
-      const token=await AsyncStorage.getItem("token")
-      const backendurl='http://43.200.174.193:8080/api/user/modify';
-      const userData={
+    try {
+      // 수정된 사용자 정보 저장
+      const updatedUserInfo = {
         name,
         nickname,
         username,
@@ -28,25 +31,14 @@ const UserInfoScreen = () => {
         password,
       };
 
-      const response=await axios.patch(backendurl, userData, {
-        headers:{
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      });
+      // AsyncStorage에 저장
+      await AsyncStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
 
-      Alert.alert("수정 성공", "정보가 성공적으로 수정되었습니다.");
-      NavigationContainer.goBack();
+      Alert.alert("수정되었습니다");
+      navigation.goBack();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Axios 에러인 경우, error.response 등을 안전하게 접근할 수 있습니다.
-        console.error("서버 오류 응답: ", error.response ? error.response.data : "No server response");
-        Alert.alert("수정 오류", "수정에 오류가 발생했습니다. 다시 시도해주세요.");
-      } else {
-        // 그 외의 오류인 경우, 이는 일반적인 JavaScript 오류일 수 있습니다.
-        console.error("오류: ", error);
-        Alert.alert("수정 오류", "알 수 없는 오류가 발생했습니다.");
-      }
+      console.error("오류: ", error);
+      Alert.alert("수정 오류", "알 수 없는 오류가 발생했습니다.");
     }
     setIsLoading(false);
   };

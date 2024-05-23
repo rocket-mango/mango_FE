@@ -1,43 +1,29 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, Alert, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 
-const App = () => {
+const Logout = () => {
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
 
   const handleLogout = () => {
-    fetch('/api/user/logout', {
-      method: 'POST'
-    })
-    .then(response => {
-      if (response.ok) {
-        // 로그아웃 성공 시 처리할 작업 추가
-        console.log('로그아웃 성공');
-      } else {
-        // 로그아웃 실패 시 처리할 작업 추가
-        console.log('로그아웃 실패');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+    navigation.navigate('RealLogout'); // 'RealLogout'을 적절한 네비게이션 타겟으로 수정합니다.
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>로그아웃</Text>
       <Text style={styles.boldLargeText}>로그아웃 하시겠습니까?</Text>
       <Image
         source={require("../assets/sadMango.png")}
         style={styles.sadMango}
       />
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.greenButton} onPress={() => handleLogout()}>
+        <TouchableOpacity style={styles.greenButton} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>로그아웃 취소</Text>
         </TouchableOpacity>
         <View style={styles.space} />
-        <TouchableOpacity style={styles.whiteButton} onPress={() => handleLogout()}>
+        <TouchableOpacity style={styles.whiteButton} onPress={handleLogout}>
           <Text style={styles.buttonText}>로그아웃 하기</Text>
         </TouchableOpacity>
-
       </View>
     </ScrollView>
   );
@@ -49,7 +35,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     padding: 20,
     backgroundColor: '#F5F5F5'
-
   },
   title: {
     fontSize: 22,
@@ -68,12 +53,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginBottom: 30,
     alignItems: 'center',
+    marginTop: -20, // 버튼을 위로 올리기
   },
   sadMango:{
     width: 160,
     height: 160,
     alignSelf: 'center',
-    marginBottom: 150,
+    marginBottom: 120,
+    marginTop: 70, // 이미지 위에 여백 추가
   },
   buttonText: {
     color: 'black',
@@ -81,7 +68,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   greenButton: {
-    backgroundColor: '#228B22',
+    backgroundColor: '#AFD803',
     padding: 10,
     width: 300,  // 너비 증가
     alignItems: 'center',
@@ -99,4 +86,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;
+export default Logout;
