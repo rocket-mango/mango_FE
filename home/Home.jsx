@@ -99,7 +99,7 @@ useEffect(() => {
         }
 
         const response = await axios.get(
-          `http://43.200.174.193:8080/api/disease/my-mango-list`,
+          `http://3.36.74.4:8080/api/disease/my-mango-list`,
           {
             headers: {
               Authorization: token,
@@ -167,7 +167,7 @@ useEffect(() => {
           <Text style={styles.title}>최근 진단 기록</Text>
           <TouchableOpacity
             style={styles.justifyCenterContainer}
-            onPress={() => navigation.navigate("진단 기록")}
+            onPress={() => navigation.navigate("List")}
           >
             <Text style={{ fontSize: 14, color: "#686868", fontWeight: "600" }}>
               더보기 →
@@ -192,7 +192,7 @@ useEffect(() => {
                 <TouchableOpacity
                   key={index}
                   style={{
-                    width: 340,
+                    width: 300,
                     height: 110,
                     backgroundColor: "#F9F9F9",
                     borderWidth: 2,
@@ -251,11 +251,9 @@ useEffect(() => {
         <View
           style={{
             marginHorizontal: 24,
-            width: 340,
             height: 110,
             backgroundColor: "#F9F9F9",
             borderRadius: 6,
-            marginRight: 12,
             justifyContent: "center", // 세로축 가운데
             alignItems: "center", // 가로축 가운데
           }}
@@ -309,7 +307,7 @@ useEffect(() => {
                   paddingTop: 4,
                 }}
               >
-                오늘은 망고가 자라기에 최적의 날씨에요
+                망고가 자라기에 최적의 날씨!
               </Text>
             </View>
           </View>
@@ -400,7 +398,7 @@ useEffect(() => {
                   marginBottom: 10,
                 }}
               >
-                망고 재배 기온 팁
+                망고 재배 기온
               </Text>
               <Text style={{ flexWrap: "wrap" }}>
                 망고 재배자들이라면, 반드시 알아야 하는 재배 기온 조절!

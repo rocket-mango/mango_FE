@@ -1,4 +1,3 @@
-// test/result/index.tsx 또는 test/result/Result.tsx
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,

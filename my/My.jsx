@@ -17,8 +17,8 @@ export default function My() {
   const infoTitle = ["이메일", "닉네임", "이름", "아이디", "비밀번호"];
   const [userInfo, setUserInfo] = useState({
     email: "yujin@google.com",
-    nickname: "yujin",
-    name: "yujin",
+    nickname: "정유진",
+    name: "정유진",
     username: "yujin00",
     password: "보안을 위해 가렸습니다."
   });

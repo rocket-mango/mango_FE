@@ -3,13 +3,15 @@ import {
   Text,
   View,
   StyleSheet,
-  Button,
+  TouchableOpacity,
   TextInput,
   Image,
   Alert,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { REACT_APP_BACKEND_URL } from '@env';
 
 export default function Login() {
   const navigation = useNavigation();
@@ -23,16 +25,14 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(
-        "http://3.36.74.4:8080/api/user/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        }
-      );
+      console.log(`${process.env.REACT_APP_BACKEND_URL}`);
+      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
       if (response.ok) {
         // 로그인 성공
@@ -42,7 +42,7 @@ export default function Login() {
         if (token) {
           // 토큰 저장
           await AsyncStorage.setItem("token", token);
-          navigation.navigate("AppScreen", { screen: 'HomeTab' });
+          navigation.navigate("앱 화면");
         } else {
           throw new Error("토큰이 없음");
         }
@@ -57,71 +57,107 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Image source={require("../assets/망하지망고.png")} />
-        <Text
-          style={{
-            marginTop: 15,
-            marginBottom: 50,
-            fontSize: 15,
-            fontWeight: "bold",
-          }}
+    <View style={styles.screenContainer}>
+      <View style={styles.screen}>
+        <View style={styles.container}>
+          <Image source={require("../assets/망하지망고.png")} />
+          <Text
+            style={{
+              marginTop: 24,
+              marginBottom: 48,
+              fontSize: 16,
+              fontWeight: "bold",
+            }}
+          >
+            실패 없는 재배를 위한,{"\n"}망고 질병 진단 서비스!
+          </Text>
+
+          <TextInput
+            style={styles.textInput}
+            placeholder="아이디를 입력해주세요"
+            onChangeText={handleUsernameChange}
+          />
+          <TextInput
+            style={[styles.textInput, { marginBottom: 0 }]}
+            placeholder="비밀번호를 입력해주세요"
+            onChangeText={handlePasswordChange}
+          />
+        </View>
+
+        <View style={{ flexDirection: "row-reverse", marginBottom: 14 }}>
+          <Text style={{ fontSize: 14 }}>비밀번호 찾기</Text>
+          <View style={{ width: 18 }} />
+          <Text style={{ fontSize: 14 }}>아이디 찾기</Text>
+        </View>
+
+        <View style={{ height: 30 }} />
+        {/*로그인 실패 시 (isLogin이 false이면) 문구가 뜨도록 */}
+        {!isLogin && (
+          <Text
+            style={{
+              color: "red",
+              fontSize: 13,
+              textAlign: "center",
+              marginBottom: 14,
+            }}
+          >
+            로그인에 실패. 아이디와 비밀번호를 확인해주세요.
+          </Text>
+        )}
+
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>로그인하기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              borderWidth: 1.5,
+              borderColor: "#03CF5D",
+              backgroundColor: "white",
+            },
+          ]}
         >
-          실패 없는 망고 재배를 위한 질병 진단 서비스!
-        </Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="아이디를 입력해주세요"
-          onChangeText={handleUsernameChange}
-        />
-        <TextInput
-          style={styles.textInput}
-          placeholder="비밀번호를 입력해주세요"
-          onChangeText={handlePasswordChange}
-        />
-      </View>
+          <Text style={styles.buttonText}>네이버로 로그인</Text>
+        </TouchableOpacity>
 
-      <View style={{ flexDirection: "row-reverse" }}>
-        <Text>비밀번호 찾기</Text>
-        <View style={{ width: 10 }} />
-        <Text>아이디 찾기</Text>
-      </View>
-
-      <View style={{ height: 30 }} />
-      {/*로그인 실패 시 (isLogin이 false이면) 문구가 뜨도록 */}
-      {!isLogin && (
-        <Text style={{ color: "red", fontSize: 13, textAlign: "center" }}>
-          로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.
-        </Text>
-      )}
-
-      <View style={styles.button}>
-        <Button title="로그인" onPress={handleLogin} />
+        <TouchableOpacity
+          style={{ alignItems: "center", marginTop: 6 }}
+          onPress={() => navigation.navigate("회원가입")}
+        >
+          <Text style={{ fontSize: 14, color: "#686868", fontWeight: "600" }}>
+            회원가입하기 →
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screenContainer: { flex: 1, backgroundColor: "white" },
-  screen: {
-    margin: 40,
+  screenContainer: {
+    flex: 1,
     justifyContent: "center",
+    backgroundColor: "white",
+  },
+  screen: {
+    marginHorizontal: 40,
   },
   container: {
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 10,
   },
   button: {
     width: "100%",
-    //height: 50,
-    marginTop: 15,
+    height: 54,
     justifyContent: "center",
-    //backgroundColor: "#FECA1A",
+    alignItems: "center",
+    marginBottom: 14,
+    borderRadius: 10,
+    backgroundColor: "#FECA1A",
     ...Platform.select({
       ios: {
-        shadowColor: "#FECA1A",
+        shadowColor: "rgb(0,0,0)",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
@@ -130,15 +166,18 @@ const styles = StyleSheet.create({
         elevation: 3, // TODO: 안드로이드 버튼 그림자 수정
       },
     }),
-    borderRadius: 10,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
   textInput: {
     width: "100%",
     height: 50,
-    marginBottom: 5,
-    justifyContent: "center",
-    paddingLeft: 15,
+    marginBottom: 10,
+    paddingLeft: 18,
     borderWidth: 1,
+    borderRadius: 5,
     borderColor: "gray",
   },
 });
