@@ -98,8 +98,9 @@ useEffect(() => {
           throw new Error("토큰이 없습니다.");
         }
 
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://default-url-if-env-is-missing.com"; // Use a default URL or handle it as needed
         const response = await axios.get(
-          `http://3.36.74.4:8080/api/disease/my-mango-list`,
+          `${backendUrl}/api/disease/my-mango-list`, // Using template literals for dynamic URL
           {
             headers: {
               Authorization: token,

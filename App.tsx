@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Home } from "./home";
 import { Test } from "./test";
 import { Result } from "./test/result";
+console.log(Result);
 import { My } from "./my";
 import { List } from "./list";
 import { Login } from "./login";
@@ -32,7 +33,7 @@ function TestStackScreen() {
   return (
     <TestStack.Navigator>
       <TestStack.Screen
-        name="질병 업로드"
+        name="사진 업로드"
         component={Test}
         options={{
           //headerLeft: null,

@@ -25,7 +25,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      console.log(`${process.env.REACT_APP_BACKEND_URL}`);
+      console.log(`${REACT_APP_BACKEND_URL}`);
       const response = await fetch(`${REACT_APP_BACKEND_URL}/api/user/login`, {
         method: "POST",
         headers: {
