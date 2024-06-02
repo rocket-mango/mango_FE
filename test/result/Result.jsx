@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import axios from "axios";
+import { REACT_APP_BACKEND_URL } from '@env';
 
 export default function Result() { // 기본 내보내기가 아닌 명시적 내보내기로 변경
   

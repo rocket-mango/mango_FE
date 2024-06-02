@@ -15,6 +15,7 @@ import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
+import { REACT_APP_BACKEND_URL } from '@env';
 
 export default function Test() {
   const navigation = useNavigation();
@@ -116,7 +117,7 @@ const handleUpload = async () => {
       });
       formData.append("location",location);
       const response = await axios.post(
-        `http://43.201.66.224:8080/api/disease/diagnosis`,
+        `${REACT_APP_BACKEND_URL}/api/disease/diagnosis`,
         formData,
         {
           headers: {
