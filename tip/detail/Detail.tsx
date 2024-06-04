@@ -54,19 +54,19 @@ const Detail: React.FC =() => {
       );
 
       console.log("API 응답:", response.data);
-      const farmingInfoData = response.data.farminginfo;
+      const farmingInfoData = response.data;
       const transformedTipData = {
-      fid: farmingInfoData.fid,
-      topic: farmingInfoData.topic,
-      title1: farmingInfoData.title1,
-      summary: farmingInfoData.summary,
-      refImageUrl: farmingInfoData.refImageUrl,
-      content1: farmingInfoData.content1,
+      fid: farmingInfoData?.fid,
+      topic: farmingInfoData?.topic,
+      title1: farmingInfoData?.title1,
+      summary: farmingInfoData?.summary,
+      refImageUrl: farmingInfoData?.refImageUrl,
+      content1: farmingInfoData?.content1,
       imageUrl1: farmingInfoData.imageurl1,  // API 응답이 'imageurl1'로 되어 있으므로 주의
-      title2: farmingInfoData.title2,
-      content2: farmingInfoData.content2,
-      imageUrl2: farmingInfoData.imageurl2,  // 마찬가지로 'imageurl2'
-      youtubeUrl: farmingInfoData.youtubeurl,  // 'youtubeurl' 주의
+      title2: farmingInfoData?.title2,
+      content2: farmingInfoData?.content2,
+      imageUrl2: farmingInfoData?.imageurl2,  // 마찬가지로 'imageurl2'
+      youtubeUrl: farmingInfoData?.youtubeurl,  // 'youtubeurl' 주의
 };
 
       setFarmingInfo(transformedTipData);
@@ -111,8 +111,10 @@ const Detail: React.FC =() => {
       <View style={{ marginHorizontal: 24 }}>
         <Text style={styles.title}>{farmingInfo.title1}</Text>
         <Text style={styles.content}>{farmingInfo.content1}</Text>
-        {farmingInfo.imageUrl1 && (
+        {farmingInfo.imageUrl1 ? (
           <Image source={{ uri: farmingInfo.imageUrl1 }} style={styles.image} />
+        ) : (
+          <Text>이미지를 불러올 수 없습니다.</Text>
         )}
         <View style={styles.split} />
         <Text style={styles.title}>{farmingInfo.title2}</Text>
