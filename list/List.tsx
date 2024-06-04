@@ -14,6 +14,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "../navigation";
 
+const backendUrl=process.env.REACT_APP_BACKEND_URL;
 // 데이터 항목의 타입
 interface MangoItem {
   mid: string;
@@ -41,7 +42,7 @@ const List: React.FC = () => {
       }
 
       const response = await axios.get(
-        `http://3.36.74.4:8080/api/disease/my-mango-list`,
+        `${backendUrl}/api/disease/my-mango-list`,
         {
           headers: {
             Authorization: token,

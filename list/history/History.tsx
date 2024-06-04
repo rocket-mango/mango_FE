@@ -38,6 +38,7 @@ const History: React.FC = () => {
   const [diseaseData, setDiseaseData] = useState<DiseaseData | null>(null);
   const navigation = useNavigation();
 
+  const backendUrl=process.env.REACT_APP_BACKEND_URL;
   const fetchDiseaseData = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -46,7 +47,7 @@ const History: React.FC = () => {
       }
 
       const response = await axios.get<DiseaseData>(
-        `http://3.36.74.4:8080/api/disease/${mid}`,
+        `${backendUrl}/api/disease/${mid}`,
         {
           headers: {
             Authorization: token,

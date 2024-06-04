@@ -12,6 +12,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation";
+//import {REACT_APP_BACKEND_URL} from '@env';
+import Config from 'react-native-config';
+
+const backendUrl = Config.REACT_APP_BACKEND_URL;
 
 interface FarmingInfo {
   id: number;
@@ -42,9 +46,7 @@ const Tip: React.FC=() =>{
         throw new Error("토큰이 없습니다.");
       }
 
-      const response = await axios.get<FarmingInfoList>(
-        `http://3.36.74.4:8080/api/farmingInfo/list/${categoryId}`,
-        {
+      const response = await axios.get(`${Config.REACT_APP_BACKEND_URL}/api/farmingInfo/list/${categoryId}`, {
           headers: {
             Authorization: `${token}`,
           },

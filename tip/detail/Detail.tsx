@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation";
+import Config from 'react-native-config';
 
 interface FarmingInfo {
   fid: string;
@@ -41,8 +42,10 @@ const Detail: React.FC =() => {
         throw new Error("토큰이 없습니다.");
       }
 
+      console.log(`Request URL: ${Config.REACT_APP_BACKEND_URL}/api/farmingInfo/${fid}`);
+
       const response = await axios.get(
-        `http://3.36.74.4:8080/api/farmingInfo/${fid}`,
+        `${Config.REACT_APP_BACKEND_URL}/api/farmingInfo/${fid}`,
         {
           headers: {
             Authorization: token,
@@ -51,19 +54,21 @@ const Detail: React.FC =() => {
       );
 
       console.log("API 응답:", response.data);
+      const farmingInfoData = response.data.farminginfo;
       const transformedTipData = {
-        fid: response.data.fid,
-        topic: response.data.topic,
-        title1: response.data.title1,
-        summary: response.data.summary,
-        refImageUrl: response.data.refImageUrl,
-        content1: response.data.content1,
-        imageUrl1: response.data.imageUrl1,
-        title2: response.data.title2,
-        content2: response.data.content2,
-        imageUrl2: response.data.imageUrl2,
-        youtubeUrl: response.data.youtubeUrl,
-      };
+      fid: farmingInfoData.fid,
+      topic: farmingInfoData.topic,
+      title1: farmingInfoData.title1,
+      summary: farmingInfoData.summary,
+      refImageUrl: farmingInfoData.refImageUrl,
+      content1: farmingInfoData.content1,
+      imageUrl1: farmingInfoData.imageurl1,  // API 응답이 'imageurl1'로 되어 있으므로 주의
+      title2: farmingInfoData.title2,
+      content2: farmingInfoData.content2,
+      imageUrl2: farmingInfoData.imageurl2,  // 마찬가지로 'imageurl2'
+      youtubeUrl: farmingInfoData.youtubeurl,  // 'youtubeurl' 주의
+};
+
       setFarmingInfo(transformedTipData);
     } catch (error) {
       console.error("재배 팁 정보를 불러오는 데 실패했습니다: ", error);

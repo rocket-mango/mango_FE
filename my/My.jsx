@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'axios';
+
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 export default function My() {
   const navigation = useNavigation();
@@ -27,14 +30,13 @@ export default function My() {
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        // 서버에서 사용자 정보를 가져오는 부분은 주석 처리
-        // const backendurl = 'http://3.36.74.4:8080/api/user/information';
-        // const response = await axios.get(backendurl, {
-        //   headers: {
-        //     Authorization: token
-        //   }
-        // });
-        // setUserInfo(response.data);
+        //const backendurl = 'http://3.36.74.4:8080/api/user/information';
+        const response = await axios.get(`${backendUrl}/api/user/information`, {
+          headers: {
+            Authorization: token
+          }
+        });
+        setUserInfo(response.data);
         
         // 로컬 스토리지에서 가져오기
         const storedUserInfo = await AsyncStorage.getItem("userInfo");
