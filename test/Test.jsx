@@ -21,6 +21,7 @@ export default function Test() {
   const navigation = useNavigation();
   const [selectImage, setSelectImage] = useState("");
   const [location, setLocation] = useState("");  
+  
 
   // 권한
   async function requestCameraPermission() {
@@ -117,7 +118,7 @@ const handleUpload = async () => {
       });
       formData.append("location",location);
       const response = await axios.post(
-        `${REACT_APP_BACKEND_URL}/api/disease/diagnosis`,
+        `https://api.capston-test-mm.p-e.kr/api/disease/diagnosis`,
         formData,
         {
           headers: {
@@ -130,11 +131,11 @@ const handleUpload = async () => {
 
       // 업로드 성공
       console.log('업로드 성공:', response.data);
-      //Alert.alert("Upload Success", "Image uploaded successfully!");
+      Alert.alert("Upload Success", "Image uploaded successfully!");
     } catch (error) {
       // 업로드 실패
       console.error('업로드 에러:', error);
-      //Alert.alert("업로드 에러", "이미지 업로드에 실패했습니다.");
+      Alert.alert("업로드 에러", "이미지 업로드에 실패했습니다.");
     }
   }
 }  

@@ -38,7 +38,7 @@ const History: React.FC = () => {
   const [diseaseData, setDiseaseData] = useState<DiseaseData | null>(null);
   const navigation = useNavigation();
 
-  const backendUrl=process.env.REACT_APP_BACKEND_URL;
+  //const backendUrl=process.env.REACT_APP_BACKEND_URL;
   const fetchDiseaseData = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -55,8 +55,7 @@ const History: React.FC = () => {
         }
       );
 
-      const mango = response.data.mango;
-      const disease = response.data.disease;
+      const { mango, disease } = response.data;
 
       console.log(response.data);
       const transformedDiseaseData: DiseaseData = {
@@ -65,7 +64,7 @@ const History: React.FC = () => {
           mid: mango.mid,
           img_url: mango.img_url,
           location: mango.location,
-          is_disease: mango.is_disease, //오류 안 나는데 왜..?
+          is_disease: mango._disease, //왜 오류?
         },
         disease: {
           name: disease.name,
@@ -99,7 +98,7 @@ const History: React.FC = () => {
           text: "삭제",
           onPress: async () => {
             await axios.delete(
-              `http://3.36.74.4:8080/api/disease/lists/delete/${diseaseData.mango.mid}`,
+              `https://api.capston-test-mm.p-e.kr/api/disease/lists/delete/${diseaseData.mango.mid}`,
               {
                 headers: {
                   Authorization: `${await AsyncStorage.getItem("token")}`,
