@@ -42,7 +42,7 @@ const List: React.FC = () => {
       }
 
       const response = await axios.get(
-        `${backendUrl}/api/disease/my-mango-list`,
+        `https://api.capston-test-mm.p-e.kr/api/disease/my-mango-list`,
         {
           headers: {
             Authorization: token,

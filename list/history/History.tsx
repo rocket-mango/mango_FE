@@ -47,7 +47,7 @@ const History: React.FC = () => {
       }
 
       const response = await axios.get<DiseaseData>(
-        `${backendUrl}/api/disease/${mid}`,
+        `https://api.capston-test-mm.p-e.kr/api/disease/${mid}`,
         {
           headers: {
             Authorization: token,
