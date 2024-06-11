@@ -56,18 +56,18 @@ const Detail: React.FC =() => {
       console.log("API 응답:", response.data);
       const farmingInfoData = response.data;
       const transformedTipData = {
-      fid: farmingInfoData?.fid,
-      topic: farmingInfoData?.topic,
-      title1: farmingInfoData?.title1,
-      summary: farmingInfoData?.summary,
-      refImageUrl: farmingInfoData?.refImageUrl,
-      content1: farmingInfoData?.content1,
-      imageUrl1: farmingInfoData.imageurl1,  // API 응답이 'imageurl1'로 되어 있으므로 주의
-      title2: farmingInfoData?.title2,
-      content2: farmingInfoData?.content2,
-      imageUrl2: farmingInfoData?.imageurl2,  // 마찬가지로 'imageurl2'
-      youtubeUrl: farmingInfoData?.youtubeurl,  // 'youtubeurl' 주의
-};
+        fid: response.data.fid,
+        topic: response.data.topic,
+        title1: response.data.title1,
+        summary: response.data.summary,
+        refImageUrl: response.data.refImageUrl,
+        content1: response.data.content1,
+        imageUrl1: response.data.imageUrl1,
+        title2: response.data.title2,
+        content2: response.data.content2,
+        imageUrl2: response.data.imageUrl2,
+        youtubeUrl: response.data.youtubeUrl,
+      };
 
       setFarmingInfo(transformedTipData);
     } catch (error) {
@@ -112,7 +112,11 @@ const Detail: React.FC =() => {
         <Text style={styles.title}>{farmingInfo.title1}</Text>
         <Text style={styles.content}>{farmingInfo.content1}</Text>
         {farmingInfo.imageUrl1 ? (
-          <Image source={{ uri: farmingInfo.imageUrl1 }} style={styles.image} />
+          <Image 
+            source={{ uri: farmingInfo.imageUrl1 }} 
+            style={styles.image}
+            onError={(e) => console.error("Failed to load imageUrl1:", e.nativeEvent.error)}
+          />
         ) : (
           <Text>이미지를 불러올 수 없습니다.</Text>
         )}

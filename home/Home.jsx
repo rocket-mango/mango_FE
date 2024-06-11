@@ -138,7 +138,7 @@ useEffect(() => {
       <View style={styles.screen}>
         <View style={styles.space}>
           <Text style={styles.title}>
-            정유진님,
+            유홍철님,
             {"\n"}
             오늘도 망고가 건강한가요?
           </Text>

@@ -12,10 +12,9 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
-import { REACT_APP_BACKEND_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Result() { // 기본 내보내기가 아닌 명시적 내보내기로 변경
-  
+export default function Result() {
   const navigation = useNavigation();
   const route = useRoute();
   const { img_url, location } = route.params || {};
@@ -24,7 +23,7 @@ export default function Result() { // 기본 내보내기가 아닌 명시적 �
   const [testResult, setTestResult] = useState({
     diseaseResult: {
       is_disease: false,
-      img_url: "", // 여기서 초기화
+      img_url: "",
     },
     uploadInfo: {
       location: "",
@@ -39,56 +38,81 @@ export default function Result() { // 기본 내보내기가 아닌 명시적 �
   });
 
   useEffect(() => {
-    // async function fetchDiagnosis() {
-    //   setIsLoading(true);
-    //   setTimeout(() => {
-    //     const data = {
-    //       diseaseResult: {
-    //         is_disease: Math.random() > 0.5, // 임의의 값으로 질병 여부 결정
-    //         img_url: img_url,
-    //       },
-    //       uploadInfo: {
-    //         location: location,
-    //         date: new Date().toISOString().split("T")[0],
-    //       },
-    //       top3List: ["탄저병", "궤양병", "흰가루병"],
-    //       diseaseInfo: {
-    //         description: "잎 반점, 꽃 마름병, 시든 끝, 가지 마름병 및 과일 썩음병을 유발합니다. 잎과 가지에 작은 물집 같은 반점이 생깁니다. 어린 잎은 시들고 건조해집니다. 부드러운 가지는 시들고 죽는 증상이 나타납니다. 영향을 받은 가지는 결국 말라 버립니다. 과일에는 검은 반점이 나타납니다. 과일의 과육은 딱딱해지고, 익으면 갈라지고 썩습니다. 감염된 과일은 떨어집니다.",
-    //         cause: "망고 탄저병은 콜레토트리쿰 글로에오스포리oides 변종 미노(완전 단계의 이름인 글로메렐라 싱굴라타 변종 미노로도 알려져 있음)라는 곰팡이에 의해 발생합니다. 이 곰팡이의 포자 생산은 습하거나 습한 날씨에서 촉진됩니다. 이러한 포자의 분산은 특히 비와 바람에 의해 촉진됩니다. 이를 통해 비교적 짧은 거리에 걸쳐 질병이 확산될 수 있습니다.",
-    //         treatment: "꽃이 피는 시기부터 만코제브(추천 라벨 속도로 14일마다)를 정기적으로 살포하면 과일의 감염 수준을 줄이는 데 유용합니다. 수확 14일 이내에는 만코제브를 사용하지 마세요. 녹색 미숙과에 탄저병이 심해지면 프로클로라즈를 몇 차례 신중하게 살포하는 것이 좋습니다. 그러나 프로클로라즈를 과다하게 사용하면 탄저병 내성균이 생길 수 있으므로 주의해야 합니다. 망고 스캐브 방제에 권장되는 구리 스프레이는 하루의 보류 기간만으로 탄저병을 방제할 수 있습니다. 망고 과일의 탄저병 방제를 위한 수확 후 처리제가 있습니다. 프로클로라즈는 냉비순환식 스프레이로 사용됩니다. 과일 파리를 방제하기 위해 사용되는 뜨거운 물에 담그는 방법도 탄저병과 줄기 끝 부패를 방제할 수 있습니다. 뜨거운 베노밀 담그기는 탄저병을 방제할 수 있으며, 줄기 끝 부패가 문제가 되는 경우에 유용합니다.",
-    //       },
-    //     };
-    //     console.log("API Response: ", data);
-    //     setTestResult(data);
-    //     setIsLoading(false);
-    //   }, 5000); // 5초 후에 데이터를 설정
-    // }
-
     if (img_url && location) {
-      fetchDiagnosis(image_url, location);
+      fetchDiagnosis(img_url, location);
     } else {
-      Alert.alert("Error", "No image URL or location provided.");
+      //Alert.alert("오류", "이미지를 업로드 해주세요.");
       navigation.goBack();
-      //setIsLoading(false);
     }
   }, []);
 
   async function fetchDiagnosis(imgUrl, loc) {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${REACT_APP_BACKEND_URL}/api/disease/diagnosis`, {
-        mangoImage: imgUrl,
-        location: loc
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        Alert.alert("오류", "토큰이 없습니다. 다시 로그인 해주세요.");
+        navigation.navigate("Login");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("mangoImage", {
+        uri: imgUrl,
+        type: "image/png",
+        name: "upload.png",
       });
-      setTestResult(response.data);
+      formData.append("location", loc);
+
+      const response = await axios.post(
+        `https://api.capston-test-mm.p-e.kr/api/disease/diagnosis`,
+        formData,
+        {
+          headers: {
+            "Authorization": `Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoi7KCV7Jyg7KeEIiwidXNlcm5hbWUiOiJ5dWppbjAwIiwibmlja25hbWUiOiJ5dWppbmFsaWNlIiwiZW1haWwiOiJ3amRkYndsc0Bld2hhaW4ubmV0Iiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTcxNzU4MjAzOCwiZXhwIjoxNzE3NTg1NjM4fQ.bgGQNetcrxC-M11gcrXK4QtswJADF5RXC7MhaS43ZwA`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      //console.log("API 응답: ", response.data);
+      const { mango, top3List, disease } = response.data;
+      console.log("응답 데이터: ", response.data);
+
+      if (mango && typeof mango._disease !== 'undefined') {
+        setTestResult({
+          diseaseResult: {
+            is_disease: mango._disease,
+            img_url: mango.img_url,
+          },
+          uploadInfo: {
+            location: mango.location,
+            date: new Date(mango.createdDate).toISOString().split("T")[0],
+          },
+          top3List: top3List || [],
+          diseaseInfo: {
+            description: disease.symptom,
+            cause: disease.reason,
+            treatment: disease.handle,
+          },
+        });
+      } else {
+        console.error("is_disease 값이 없습니다: ", mango);
+      }
+
       setIsLoading(false);
     } catch (error) {
       console.error("Fetching diagnosis failed: ", error);
       setIsLoading(false);
-      Alert.alert("Fetch Error", "Failed to load diagnosis data.");
+      if (error.response && error.response.status === 401) {
+        Alert.alert("Authentication Error", "세션이 만료되었습니다. 다시 로그인 해주세요.");
+        navigation.navigate("Login");
+      } else {
+        Alert.alert("Fetch Error", "진단 데이터를 불러오는 데 실패했습니다.");
+      }
     }
   }
-  
+
   const deleteMango = (mid) => {
     console.log("Delete mango with id:", mid);
     Alert.alert("삭제되었습니다");
@@ -102,42 +126,11 @@ export default function Result() { // 기본 내보내기가 아닌 명시적 �
       },
       {
         text: "삭제",
-        onPress: () => deleteMango(testResult.mid),
+        onPress: () => deleteMango(testResult.diseaseResult.mid),
         style: "destructive",
       },
     ]);
   };
-
-  if (isLoading) {
-    return (
-      <View
-        style={[
-          styles.screenContainer,
-          styles.alginCenterContainer,
-          styles.justifyCenterContainer,
-        ]}
-      >
-        <Image
-          style={{ marginBottom: 5 }}
-          source={require("../../assets/protagonist_mango.png")}
-        />
-        <Text style={styles.title}>오늘의 망고 TMI</Text>
-        <Text
-          style={{
-            fontSize: 16,
-            textAlign: "center",
-            color: "#606060",
-          }}
-        >
-          망고의 생육적정온도는{"\n"}24~27℃입니다.
-        </Text>
-        <View style={styles.space} />
-        <ActivityIndicator size="large" color="#FE9821" />
-        <View style={{ height: 25 }} />
-        <Text style={{ color: "#606060" }}>진단 중입니다...</Text>
-      </View>
-    );
-  }
 
   return (
     <ScrollView style={styles.screenContainer}>
@@ -163,6 +156,7 @@ export default function Result() { // 기본 내보내기가 아닌 명시적 �
               <Text style={styles.diseaseName}>{testResult.top3List[0]}</Text> 입니다.{" "}
               <Text style={styles.diseaseName}>{testResult.top3List[1]}</Text>과{" "}
               <Text style={styles.diseaseName}>{testResult.top3List[2]}</Text>의 가능성이 있습니다.
+              
             </>
           ) : (
             <>
@@ -171,15 +165,35 @@ export default function Result() { // 기본 내보내기가 아닌 명시적 �
           )}
         </Text>
       </View>
-      <View style={styles.dateRow}>
+      <View style={{ marginHorizontal: 24, marginTop: 20 }}>
+        <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingBottom: 14,
+              borderBottomWidth: 1,
+              marginBottom: 30,
+              }}
+            >
+      
         <Text style={styles.dateText}>진단일 {testResult.uploadInfo.date}</Text>
+        <View style={{flexDirection:"row"}}>
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={confirmDelete}
         >
           <Text style={styles.deleteButtonText}>결과 삭제</Text>
+          <Image
+                  source={require("../../assets/delete.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                  }}
+                />
           <Icon name="trash" size={16} color="white" style={styles.iconStyle} />
         </TouchableOpacity>
+      </View>
       </View>
       {testResult.diseaseResult.is_disease ? (
         <View>
@@ -210,13 +224,14 @@ export default function Result() { // 기본 내보내기가 아닌 명시적 �
         >
           <Text style={styles.buttonText}>나의 진단 기록 보러가기</Text>
         </TouchableOpacity>
-      )}
+      )}</View>
+      <View style={{ height: 36 }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screenContainer: { flex: 1, padding: 20, backgroundColor: "white" },
+  screenContainer: { flex: 1, backgroundColor: "white" },
   space: { marginBottom: 45 },
   alginCenterContainer: { alignItems: "center" },
   justifyCenterContainer: { justifyContent: "center" },
@@ -239,6 +254,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     color: "black",
+    fontWeight: "600",
   },
   deleteButton: {
     flexDirection: "row",
@@ -250,17 +266,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
     marginRight: 5,
+    fontWeight: "600",
   },
   location: {
     fontSize: 20,
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
+    marginBottom:10
   },
   image: {
-    width: "100%",
-    height: 200,
-    resizeMode: "contain",
+    width: 200,
+    aspectRatio: 1,
     marginTop: 10,
   },
   diseaseStatus: {
@@ -268,14 +285,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
+    marginTop: 20,
+    marginBottom: 10,
   },
   diseaseName: {
-    fontSize: 22, // 질병 이름의 폰트 크기 조정
+    fontSize: 24,
     fontWeight: "bold",
     color: "white",
   },
   healthyText: {
-    fontSize: 22, // "건강합니다"의 폰트 크기 조정
+    fontSize: 22,
     fontWeight: "bold",
     color: "white",
   },
@@ -293,9 +312,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
-    marginTop: 10,
+    marginBottom:16,
+    //marginTop: 10,
     color: "black",
   },
   resultSection: {
@@ -304,7 +324,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   detailText: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#333",
     marginBottom: 10,
   },
@@ -312,12 +332,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
   },
   separator: {
     height: 1,
     backgroundColor: "#E0E0E0",
-    marginHorizontal: 20,
+    marginVertical: 20,
   },
-
 });

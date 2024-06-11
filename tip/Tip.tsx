@@ -167,12 +167,13 @@ const Tip: React.FC=() =>{
             key={item.id}
             style={{
               width: "100%",
-              height: 130,
+              //height: 130,
               borderRadius: 12,
               backgroundColor: ListBoxColor(selectedFilter),
               flexDirection: "row",
               alignItems: "center",
               paddingHorizontal: 18,
+              paddingVertical:10,
               marginBottom: 12,
             }}
             onPress={() => handlePress(item.id.toString())}
