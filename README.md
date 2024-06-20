@@ -5,7 +5,6 @@
 
 ### 2. 프로젝트 로고
 
-
 ![image](https://github.com/rocket-mango/mango_FE/assets/117718423/8506fe7a-ebbf-4e16-b283-fcc384ec7b19)
 
 ### 3. 프로젝트 소개
@@ -25,7 +24,6 @@
 - 개발 기간
   - 2023.09 ~ 2024.06
 - 기술 스택
-  
   <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
   ![image](https://github.com/rocket-mango/mango_FE/assets/117718423/a67f4e2e-21f2-4d0a-a4c7-5850e87eb590)
 
