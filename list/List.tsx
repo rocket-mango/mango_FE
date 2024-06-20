@@ -17,7 +17,7 @@ import { RootStackParamList } from "../navigation";
 const backendUrl=process.env.REACT_APP_BACKEND_URL;
 // 데이터 항목의 타입
 interface MangoItem {
-  mid: string;
+  mid: number;
   is_disease: string;
   disease: string;
   img_url: string;
@@ -42,7 +42,7 @@ const List: React.FC = () => {
       }
 
       const response = await axios.get(
-        `${backendUrl}/api/disease/my-mango-list`,
+        `https://api.capston-test-mm.p-e.kr/api/disease/my-mango-list`,
         {
           headers: {
             Authorization: token,
@@ -128,8 +128,14 @@ const List: React.FC = () => {
   };
 
   // 목록 삭제
-  const handleDelete = async (mid: any) => {
+  const handleDelete = async (mid: number) => {
     try {
+      console.log("삭제 시도");
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        throw new Error("토큰이 없습니다.");
+      }
+
       Alert.alert(
         "망고 삭제 확인",
         "정말로 삭제하시겠습니까?",
@@ -141,19 +147,28 @@ const List: React.FC = () => {
           {
             text: "삭제",
             onPress: async () => {
-              await axios.delete(
-                `http://3.36.74.4:8080/api/disease/lists/delete/${mid}`,
-                {
-                  headers: {
-                    Authorization: `${await AsyncStorage.getItem("token")}`,
-                  },
+              try {
+                const response = await axios.delete(
+                  `https://api.capston-test-mm.p-e.kr/api/disease/lists/delete/${mid}`,
+                  {
+                    headers: {
+                      Authorization: token,
+                    },
+                  }
+                );
+
+                if (response.data === "successful delete mango") {
+                  const updatedMangoData = mangoData.filter(
+                    (list) => list.mid !== mid
+                  );
+                  setMangoData(updatedMangoData);
+                  setFilteredMangoData(updatedMangoData);
+                } else {
+                  throw new Error("삭제에 실패했습니다.");
                 }
-              );
-              // 삭제된 항목을 화면에서 제거
-              const updatedMangoData = mangoData.filter(
-                (list) => list.mid !== mid
-              );
-              setMangoData(updatedMangoData); // 상태 업데이트
+              } catch (error) {
+                console.error("삭제 요청에 실패했습니다: ", error);
+              }
             },
             style: "destructive",
           },

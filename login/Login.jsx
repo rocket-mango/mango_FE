@@ -26,7 +26,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       console.log(`Backend URL: ${REACT_APP_BACKEND_URL}`);
-      const response = await fetch(`${REACT_APP_BACKEND_URL}/api/user/login`, {
+      const response = await fetch(`https://api.capston-test-mm.p-e.kr/api/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

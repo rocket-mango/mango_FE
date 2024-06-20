@@ -100,7 +100,7 @@ useEffect(() => {
 
         const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://default-url-if-env-is-missing.com"; // Use a default URL or handle it as needed
         const response = await axios.get(
-          `${backendUrl}/api/disease/my-mango-list`, // Using template literals for dynamic URL
+          `https://api.capston-test-mm.p-e.kr/api/disease/my-mango-list`, // Using template literals for dynamic URL
           {
             headers: {
               Authorization: token,
@@ -138,7 +138,7 @@ useEffect(() => {
       <View style={styles.screen}>
         <View style={styles.space}>
           <Text style={styles.title}>
-            정유진님,
+            유홍철님,
             {"\n"}
             오늘도 망고가 건강한가요?
           </Text>
