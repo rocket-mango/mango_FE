@@ -24,7 +24,7 @@
 - 개발 기간
   - 2023.09 ~ 2024.06
 - 기술 스택
-  <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
+
   ![image](https://github.com/rocket-mango/mango_FE/assets/117718423/a67f4e2e-21f2-4d0a-a4c7-5850e87eb590)
 
   - 프론트엔드에서는 안드로이드 환경에서 사용할 수 있게 제작되었으며, React Native, JavaScript, TypeScript를 사용하여 동적인 화면 UI를 구축하였다.
