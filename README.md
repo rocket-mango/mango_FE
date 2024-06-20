@@ -5,6 +5,7 @@
 
 ### 2. 프로젝트 로고
 
+
 ![image](https://github.com/rocket-mango/mango_FE/assets/117718423/8506fe7a-ebbf-4e16-b283-fcc384ec7b19)
 
 ### 3. 프로젝트 소개
